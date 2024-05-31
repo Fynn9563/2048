@@ -33,11 +33,14 @@ jobs:
       - name: Build executable
         run: pyinstaller --onefile --name 2048 2048.py
 
+      - name: List files in dist directory
+        run: ls -la dist
+
       - name: Upload executable as artifact
         uses: actions/upload-artifact@v2
         with:
           name: 2048-executable
-          path: dist/2048.exe
+          path: dist/2048
 
   release:
     needs: build
@@ -50,7 +53,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: 2048-executable
-          path: ./dist/2048.exe
+          path: ./dist
 
       - name: Get Current Version
         id: get_version
@@ -98,6 +101,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/2048.exe
+          asset_path: ./dist/2048
           asset_name: 2048.exe
           asset_content_type: application/octet-stream
