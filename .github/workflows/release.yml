@@ -1,81 +1,92 @@
 name: Build and Release
 
-on:
+on: 
   push:
     tags:
       - 'v*'
   workflow_dispatch:
 
+env:
+  packageName: "2048"
+  packagePath: "dist"
+  packageFileName: "2048"
+  packageReleaseName: "2048"
+
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: write
-      deployments: write
-      packages: write
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        persist-credentials: true
+    
+      - name: Checkout repository
+        uses: actions/checkout@v2
+    
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Install pyinstaller
+        run: pip install pyinstaller
 
-    - name: Install pyinstaller
-      run: pip install pyinstaller
-
-    - name: Build executable
-      run: pyinstaller --onefile --name 2048 2048.py
-
-    - name: Upload executable as artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: 2048-executable
-        path: dist/2048
+      - name: Build executable
+        run: pyinstaller --onefile --name 2048 2048.py
+      
+      - name: Upload executable as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: 2048-executable
+          path: dist/2048.exe
 
   release:
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: write
-      deployments: write
-      packages: write
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        persist-credentials: true
+    
+      - name: Checkout repository
+        uses: actions/checkout@v2
+    
+      - name: Download executable artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: 2048-executable
+          path: ./dist
 
-    - name: Download executable artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: 2048-executable
-        path: ./dist
+      - name: Get Version
+        id: version
+        run: echo "v1.0.0" >> $GITHUB_OUTPUT # Starting version
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+      - name: Generate Tag
+        id: tag
+        run: echo "v1.0.0" >> $GITHUB_OUTPUT
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/2048/2048.exe
-        asset_name: 2048.exe
-        asset_content_type: application/octet-stream
+      - name: Check If Release Tag Exists
+        id: checkReleaseTag
+        uses: mukunku/tag-exists-action@v1.2.0
+        with:
+          tag: ${{ steps.tag.outputs.prop }}
+
+      - name: Create GitHub Release
+        if: ${{ steps.checkReleaseTag.outputs.exists == 'false' }}
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.prop }}
+          release_name: Release ${{ steps.tag.outputs.prop }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        if: ${{ steps.checkReleaseTag.outputs.exists == 'false' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/2048.exe
+          asset_name: 2048.exe
+          asset_content_type: application/octet-stream
