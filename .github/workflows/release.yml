@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build_and_release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -40,15 +40,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: 2048-executable
-          path: dist/2048
+          path: dist/2048.exe
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-    
       - name: Download executable artifact
         uses: actions/download-artifact@v2
         with:
@@ -85,7 +78,7 @@ jobs:
           git push
 
       - name: Create GitHub Release
-        if: ${{ steps.checkReleaseTag.outputs.exists == 'false' }}
+        id: create_release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
           name: "${{ env.packageReleaseName }} v${{ env.new_version }}"
