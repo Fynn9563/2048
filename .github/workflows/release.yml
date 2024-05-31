@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build_and_release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
         run: pyinstaller --onefile --name 2048 2048.py
 
       - name: List files in dist directory
-        run: ls -la dist/2048
+        run: dir dist
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -42,4 +42,4 @@ jobs:
           name: "${{ env.packageReleaseName }} ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
-            ./dist/2048/2048.exe
+            ./dist/2048.exe
