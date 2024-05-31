@@ -33,7 +33,7 @@ jobs:
           pip install pygame
 
       - name: Build executable
-        run: pyinstaller --onefile --name 2048 2048.py
+        run: pyinstaller --onefile --noconsole --name 2048 2048.py 
 
       - name: List files in dist directory
         run: dir dist
