@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        persist-credentials: true  # Ensure credentials persist
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -37,6 +39,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        persist-credentials: true  # Ensure credentials persist
 
     - name: Download executable artifact
       uses: actions/download-artifact@v2
