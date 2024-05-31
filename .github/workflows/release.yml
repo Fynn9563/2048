@@ -8,12 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        persist-credentials: true  # Keep the token for subsequent steps
+        persist-credentials: true
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -35,24 +39,22 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        persist-credentials: true  # Keep the token for subsequent steps
+        persist-credentials: true
 
     - name: Download executable artifact
       uses: actions/download-artifact@v2
       with:
         name: 2048-executable
         path: ./dist
-
-    - name: Debug GITHUB_TOKEN Scope
-      run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
-        gh auth status
-        gh api user -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
 
     - name: Create GitHub Release
       id: create_release
