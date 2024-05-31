@@ -29,9 +29,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pyinstaller==5.13.2
+          pip install pyinstaller
           pip install pygame
-          pip install setuptools
 
       - name: Build executable
         run: pyinstaller --onefile --noconsole --name 2048 2048.py 
