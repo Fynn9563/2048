@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-    
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -35,18 +35,6 @@ jobs:
 
       - name: List files in dist directory
         run: ls -la dist
-
-      - name: Upload executable as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: 2048-executable
-          path: dist/2048.exe
-
-      - name: Download executable artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: 2048-executable
-          path: ./dist
 
       - name: Get Current Version
         id: get_version
@@ -78,7 +66,6 @@ jobs:
           git push
 
       - name: Create GitHub Release
-        id: create_release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
           name: "${{ env.packageReleaseName }} v${{ env.new_version }}"
