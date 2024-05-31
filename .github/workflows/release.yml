@@ -34,7 +34,7 @@ jobs:
         run: pyinstaller --onefile --name 2048 2048.py
 
       - name: List files in dist directory
-        run: ls -la dist
+        run: ls -la dist/2048
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
