@@ -85,22 +85,10 @@ jobs:
           git push
 
       - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ steps.checkReleaseTag.outputs.exists == 'false' }}
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
+          name: "${{ env.packageReleaseName }} v${{ env.new_version }}"
           tag_name: "v${{ env.new_version }}"
-          release_name: Release "v${{ env.new_version }}"
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/2048
-          asset_name: 2048.exe
-          asset_content_type: application/octet-stream
+          files: |
+            ./dist/2048.exe
