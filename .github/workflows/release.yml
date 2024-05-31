@@ -42,4 +42,4 @@ jobs:
           name: "${{ env.packageReleaseName }} ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
-            /2048/dist/2048.exe
+            ./dist/2048
