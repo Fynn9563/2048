@@ -4,16 +4,23 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      deployments: write
+      packages: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
         persist-credentials: true
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -34,6 +41,11 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      deployments: write
+      packages: write
 
     steps:
     - name: Checkout repository
