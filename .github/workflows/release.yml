@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        persist-credentials: true
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -35,6 +37,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: true
+
     - name: Download executable artifact
       uses: actions/download-artifact@v2
       with:
